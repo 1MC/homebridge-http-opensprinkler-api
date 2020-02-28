@@ -1,14 +1,16 @@
-# homebridge-http-switch Plugin
+# homebridge-http-opensprinkler-api Plugin
 
-[![npm](https://img.shields.io/npm/v/homebridge-http-switch?style=for-the-badge)](https://www.npmjs.com/package/homebridge-http-switch)
-[![npm](https://img.shields.io/npm/dt/homebridge-http-switch?style=for-the-badge)](https://www.npmjs.com/package/homebridge-http-switch)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Supereg/homebridge-http-switch/Node-CI?style=for-the-badge)](https://github.com/Supereg/homebridge-http-switch/actions?query=workflow%3A%22Node-CI%22)
-[![GitHub issues](https://img.shields.io/github/issues/Supereg/homebridge-http-switch?style=for-the-badge)](https://github.com/Supereg/homebridge-http-switch/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Supereg/homebridge-http-switch?style=for-the-badge)](https://github.com/Supereg/homebridge-http-switch/pulls)
+[![npm](https://img.shields.io/npm/v/homebridge-http-opensprinkler-api?style=for-the-badge)](https://www.npmjs.com/package/homebridge-http-opensprinkler-api)
+[![npm](https://img.shields.io/npm/dt/homebridge-http-opensprinkler-api?style=for-the-badge)](https://www.npmjs.com/package/homebridge-http-opensprinkler-api)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1MC/homebridge-http-opensprinkler-api/Node-CI?style=for-the-badge)](https://github.com/1MC/homebridge-http-opensprinkler-api/actions?query=workflow%3A%22Node-CI%22)
+[![GitHub issues](https://img.shields.io/github/issues/1MC/homebridge-http-opensprinkler-api?style=for-the-badge)](https://github.com/Supereg/homebridge-http-switch/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/1MC/homebridge-http-opensprinkler-api?style=for-the-badge)](https://github.com/1MC/homebridge-http-opensprinkler-api/pulls)
 
 
-`homebridge-http-switch` is a [Homebridge](https://github.com/nfarina/homebridge) plugin with which you can configure 
-HomeKit switches which forward any requests to a defined http server. This comes in handy when you already have home 
+`homebridge-http-opensprinkler-api` is a [Homebridge](https://github.com/nfarina/homebridge) plugin forked from `homebridge-http-opensprinkler-api` specifically to control an OpenSprinkler system using the firmware API from v2.0 on. Example configuration shown below for simple switching of sprinkler stations ON/OFF and syncing of status is shown below.
+
+To get more details about configuration look at the 
+[README](https://github.com/Supereg/homebridge-http-notification-server) from the original author.
 automated equipment which can be controlled via http requests. Or you have built your own equipment, for example some sort 
 of lightning controlled with an wifi enabled Arduino board which than can be integrated via this plugin into Homebridge.
 
@@ -95,20 +97,6 @@ When matching the status of the switch is set to ON otherwise OFF. [Some example
 - `statusCache` \<number\> **optional** \(Default: **0**\): Defines the amount of time in milliseconds a queried state 
  of the switch is cached before a new request is made to the http device.  
  Default is **0** which indicates no caching. A value of **-1** will indicate infinite caching. 
-- `auth` \<object\> **optional**: If your http server requires authentication you can specify your credential in this 
-object. It uses those credentials for all http requests and thus overrides all possibly specified credentials inside 
-an urlObject for `onUrl`, `offUrl` and `statusUrl`.  
-The object can contain the following properties:
-    * `username` \<string\> **required**
-    * `password` \<string\> **required**
-    * `sendImmediately` \<boolean\> **optional** \(Default: **true**\): When set to **true** the plugin will send the 
-        credentials immediately to the http server. This is best practice for basic authentication.  
-        When set to **false** the plugin will send the proper authentication header after receiving an 401 error code 
-        (unauthenticated). The response must include a proper `WWW-Authenticate` header.  
-        Digest authentication requires this property to be set to **false**!
-- `httpMethod` _**deprecated**_ \<string\> **optional**: If defined it sets the http method for `onUrl` and `offUrl`. 
-This property is deprecated and only present for backwards compatibility. It is recommended to use an 
-[[urlObject](#urlobject)] to set the http method per url.
 
 * `timeout` \<integer\> **optional** \(Default: **1000**\): When using a stateless switch this timeout in 
 **milliseconds** specifies the time after which the switch is reset back to its original state.
@@ -116,61 +104,39 @@ This property is deprecated and only present for backwards compatibility. It is 
 pulls updates from your http device. For more information read [pulling updates](#the-pull-way).  
 (This option is only supported when `switchType` is **"stateful"**)
 
-- `mqtt` \<[mqttObject](#mqttobject)\> **optional**: Defines all properties used for mqtt connection.
-                                                     See [mqttObject](#mqttobject).
-
-* `multipleUrlExecutionStrategy` \<string\> **optional** \(Default: **"parallel"**\): Defines the strategy used when 
-executing multiple urls. The following are available:
-    * **"parallel"**: All urls are executed in parallel. No particular order is guaranteed. Execution as fast as possible.
-    * **"series"**: All urls are executed in the given order. Each url must complete first before the next one is executed.  
-    When using series execution you can also have a look at the [delay url](#the-delay-url).
-
 - `debug` \<boolean\> **optional**: If set to true debug mode is enabled and the plugin prints more detailed information.
 
-Below are two example configurations. One is using simple string urls and the other is using simple urlObjects.  
-Both configs can be used for a basic plugin configuration.
+Below is an example configuration for two sprinkler stations with run duration set to 10 minutes.  If you have a schedule setup on your OpenSprinkler device, that will continue to run and the status of the stations will be synced every second - as per the pullInterval setting.
 
 ```json
 {
     "accessories": [
         {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
+          "accessory": "OPENSPRINKLER-STATION",
+          "name": "Sprinkler Stn01",
           
           "switchType": "stateful",
           
-          "onUrl": "http://localhost/api/switchOn",
-          "offUrl": "http://localhost/api/switchOff",
+          "onUrl": "http://localhost:8080/cm?sid=0&en=1&t=600&pw=xxx",
+          "offUrl": "http://localhost:8080/cm?sid=0&en=0&pw=xxx",
           
-          "statusUrl": "http://localhost/api/switchStatus"
-        }   
-    ]
-}
-```
-
-```json
-{
-    "accessories": [
+          "statusUrl": "http://192.168.1.10:8080/js?pw=xxx",
+          "statusPattern": "{\"sn\":[1,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+],\"nstations\":8}",
+          "pullInterval": "1000"
+        },
         {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
+          "accessory": "OPENSPRINKLER-STATION",
+          "name": "Sprinkler Stn02",
           
           "switchType": "stateful",
           
-          "onUrl": {
-            "url": "http://localhost/api/switchOn",
-            "method": "GET"
-          },
-          "offUrl": {
-            "url": "http://localhost/api/switchOff",
-            "method": "GET"
-          },
+          "onUrl": "http://localhost:8080/cm?sid=1&en=1&t=600&pw=xxx",
+          "offUrl": "http://localhost:8080/cm?sid=1&en=0&pw=xxx",
           
-          "statusUrl": {
-            "url": "http://localhost/api/switchStatus",
-            "method": "GET"
-          }
-        }   
+          "statusUrl": "http://192.168.1.10:8080/js?pw=xxx",
+          "statusPattern": "{\"sn\":[[0-9]+,1,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+],\"nstations\":8}",
+          "pullInterval": "1000"
+        }
     ]
 }
 ```
@@ -228,185 +194,6 @@ Below is an example of an urlObject containing the basic properties:
 }
 ```
 
-#### MQTTObject
-
-A mqttObject can have the following properties:
-
-##### Basic configuration options:
-
-* `host` \<string\> **required**: Defines the host of the mqtt broker.
-* `port` \<number\> **optional** \(Default: **1883**\): Defines the port of the mqtt broker.
-* `credentials` \<object\> **optional**: Defines the credentials used to authenticate with the mqtt broker.
-    * `username` \<string\> **required**
-    * `password` \<string\> **optional**
-- `subscriptions` \<object | array\> **required**: Defines an array (or one single object) of subscriptions.
-    - `topic` \<string\> **required**: Defines the topic to subscribe to.
-    - `characteristic` \<string\> **required**: Defines the characteristic this subscription updates.
-    - `messagePattern` \<string\> **optional**: Defines a regex pattern. If `messagePattern` is not specified the 
-        message received will be used as value. If the characteristic expects a boolean value it is tested if the 
-        specified regex is contained in the received message. Otherwise the pattern is matched against the message 
-        and the data from regex group can be extracted using the given `patternGroupToExtract`.
-    - `patternGroupToExtract` \<number\> **optional** \(Default: **1**\): Defines the regex group of which data is 
-        extracted.
-
-##### Advanced configuration options:
-
-* `protocol` \<string\> **optional** \(Default: **"mqtt"**\): Defines protocol used to connect to the mqtt broker
-* `qos` \<number\> **optional** \(Default: **1**\): Defines the Quality of Service (Notice, the QoS of the publisher 
-           must also be configured accordingly).  
-           In contrast to most implementations the default value is **1**.
-    * `0`: 'At most once' - the message is sent only once and the client and broker take no additional steps to 
-                            acknowledge delivery (fire and forget).
-    * `1`: 'At least once' - the message is re-tried by the sender multiple times until acknowledgement is 
-                            received (acknowledged delivery).
-    * `2`: 'Exactly once' - the sender and receiver engage in a two-level handshake to ensure only one copy of the 
-                            message is received (assured delivery).
-* `clientId` \<string\> **optional** \(Default: `'mqttjs_' + Math.random().toString(16).substr(2, 8)`\): Defines clientId
-* `keepalive` \<number\> **optional** \(Default: **60**\): Time in seconds to send a keepalive. Set to 0 to disable.
-* `clean` \<boolean\> **optional** \(Default: **true**\): Set to false to receive QoS 1 and 2 messages while offline.
-* `reconnectPeriod` \<number\> **optional** \(Default: **1000**\): Time in milliseconds after which a reconnect is tried.
-* `connectTimeout` \<number\> **optional** \(Default: **30000**\): Time in milliseconds the client waits until the 
-        CONNECT needs to be acknowledged (CONNACK).
-
-Below is an example of an mqttObject containing the basic properties for a switch service:
-```json
-{
-  "host": "127.0.0.1",
-  "port": "1883",
-  
-  "credentials": {
-    "username": "yourUsername",
-    "password": "yourPassword"
-  },
-  
-  "subscriptions": [
-    {
-      "topic": "your/topic/here",
-      "characteristic": "On",
-      "messagePattern": "on"
-    }
-  ]
-}
-```
-
-### Stateless Switch
-
-Since **OFF** is the only possible state you do not need to declare `offUrl` and `statusUrl`
-
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
-          
-          "switchType": "stateless",
-          
-          "timeout": 1000,
-          
-          "onUrl": "http://localhost/api/switchOn"
-        }   
-    ]
-}  
-```
-
-### Reverse Stateless Switch
-
-Since **ON** is the only possible state you do not need to declare `onUrl` and `statusUrl`
-
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
-          
-          "switchType": "stateless-reverse",
-          
-          "timeout": 1000,
-          
-          "offUrl": "http://localhost/api/switchOff"
-        }   
-    ]
-}
-```
-
-### Multiple On or Off Urls
-If you wish to do so you can specify an array of urls or urlObjects (`onUrl` or `offUrl`) when your switch is a 
-**stateless switch** or a **reverse-stateless switch**.  
-**This is not possible with a normal stateful switch.**
-
-Below are two example configurations of an stateless switch with three urls. 
-One is using simple string array and the other is using simple urlObject arrays. 
-
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
-          
-          "switchType": "stateless",
-          "onUrl": [
-            "http://localhost/api/switch1On",
-            "http://localhost/api/switch2On",
-            "http://localhost/api/switch3On"
-          ]
-        }   
-    ]
-}
-```
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
-          
-          "switchType": "stateless",
-          "onUrl": [
-            {
-              "url": "http://localhost/api/switch1On"
-            },
-            {
-              "url": "http://localhost/api/switch2On"
-            },
-            {
-              "url": "http://localhost/api/switch3On"
-            }
-          ]
-        }   
-    ]
-}
-```
-
-#### The 'delay(...)' url
-
-When using multiple urls and **"series"** as `multipleUrlExecutionStrategy` you can also specify so called delay urls in the 
-`onUrl` or `offUrl` arrays. This could be used to guarantee a certain delay between two urls.  
-The delay url has the following pattern: **"delay(INTEGER)"** where 'INTEGER' is replaced with the delay in milliseconds.
-
-Here is an example:
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Delayed Switch",
-          
-          "switchType": "stateless",
-          "multipleUrlExecutionStrategy": "series",
-          
-          "onUrl": [
-            "http://localhost/api/switch1On",
-            "delay(1000)",
-            "http://localhost/api/switch2On"
-          ]
-        }   
-    ]
-}
-```
-
 ### Examples for custom statusPatterns
 
 The `statusPattern` property can be used to change the phrase which is used to identify if the switch should be turned on 
@@ -437,44 +224,3 @@ Then you could use the following pattern:
 ```
 More on how to build regex patterns: https://www.w3schools.com/jsref/jsref_obj_regexp.asp
 
-## Notification Server
-
-`homebridge-http-switch` can be used together with 
-[homebridge-http-notification-server](https://github.com/Supereg/homebridge-http-notification-server) in order to receive
-updates when the state changes at your external program. For details on how to implement those updates and how to 
-install and configure `homebridge-http-notification-server`, please refer to the 
-[README](https://github.com/Supereg/homebridge-http-notification-server) of the repository first.
-
-Down here is an example on how to configure `homebridge-http-switch` to work with your implementation of the 
-`homebridge-http-notification-server`.
-
-```json
-{
-    "accessories": [
-        {
-          "accessory": "HTTP-SWITCH",
-          "name": "Switch",
-          
-          "notificationID": "my-switch",
-          "notificationPassword": "superSecretPassword",
-          
-          "onUrl": "http://localhost/api/switchOn",
-          "offUrl": "http://localhost/api/switchOff",
-          
-          "statusUrl": "http://localhost/api/switchStatus"
-        }   
-    ]
-}
-```
-
-* `notificationID` is an per Homebridge instance unique id which must be included in any http request.  
-* `notificationPassword` is **optional**. It can be used to secure any incoming requests.
-
-To get more details about the configuration have a look at the 
-[README](https://github.com/Supereg/homebridge-http-notification-server).
-
-**Available characteristics (for the POST body)**
-
-Down here are all characteristics listed which can be updated with an request to the `homebridge-http-notification-server`
-
-* `characteristic` "On": expects a boolean `value`
