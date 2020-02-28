@@ -7,7 +7,7 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/1MC/homebridge-http-opensprinkler-api?style=for-the-badge)](https://github.com/1MC/homebridge-http-opensprinkler-api/pulls)
 
 
-`homebridge-http-opensprinkler-api` is a [Homebridge](https://github.com/nfarina/homebridge) plugin forked from `homebridge-http-opensprinkler-api` specifically to control an OpenSprinkler system using the firmware API from v2.0 on. Example configuration shown below for simple switching of sprinkler stations ON/OFF and syncing of status is shown below.
+`homebridge-http-opensprinkler-api` is a [Homebridge](https://github.com/nfarina/homebridge) plugin forked from `homebridge-http-switch` specifically to control an OpenSprinkler system using the firmware API from v2.0 on. Example configuration shown below for simple switching of sprinkler stations ON/OFF and syncing of status is shown below.
 
 To get more details about configuration look at the 
 [README](https://github.com/Supereg/homebridge-http-notification-server) from the original author.
@@ -23,46 +23,11 @@ More about on how to configure such switches can be read further down.
 
 First of all you need to have [Homebridge](https://github.com/nfarina/homebridge) installed. Refer to the repo for 
 instructions.  
-Then run the following command to install `homebridge-http-switch`
+Then run the following command to install `homebridge-http-opensprinkler-api`
 
 ```
-sudo npm install -g homebridge-http-switch
+sudo npm install -g homebridge-http-opensprinkler-api
 ```
-
-## Updating the switch state in HomeKit
-
-The _'On'_ characteristic from the _'switch'_ service has the permission to `notify` the HomeKit controller of state 
-changes. `homebridge-http-switch` supports two ways to send state changes to HomeKit.
-
-### The 'pull' way:
-
-The 'pull' way is probably the easiest to set up and supported in every scenario. `homebridge-http-switch` requests the 
-state of the switch in an specified interval (pulling) and sends the value to HomeKit.  
-Look for `pullInterval` in the list of configuration options if you want to configure it.
-
-### The 'push' way:
-
-When using the 'push' concept, the http device itself sends the updated value to `homebridge-http-switch` whenever 
-the value changes. This is more efficient as the new value is updated instantly and `homebridge-http-switch` does not 
-need to make needless requests when the value didn't actually change.  
-However because the http device needs to actively notify the `homebridge-http-switch` there is more work needed 
-to implement this method into your http device. 
-
-#### Using MQTT:
-
-MQTT (Message Queuing Telemetry Transport) is a protocol widely used by IoT devices. IoT devices can publish messages
-on a certain topic to the MQTT broker which then sends this message to all clients subscribed to the specified topic.
-In order to use MQTT you need to setup a broker server ([mosquitto](https://github.com/eclipse/mosquitto) is a solid 
-open source MQTT broker running perfectly on a device like the Raspberry Pi) and then instruct all clients to 
-publish/subscribe to it.  
-For [shelly.cloud](https://shelly.cloud) devices mqtt is the best and only option to implement push-updates.
-
-#### Using 'homebridge-http-notification-server':
-
-For those of you who are developing the http device by themselves I developed a pretty simple 'protocol' based on http 
-to send push-updates.   
-How to implement the protocol into your http device can be read in the chapter 
-[**Notification Server**](#notification-server)
 
 ## Configuration:
 
