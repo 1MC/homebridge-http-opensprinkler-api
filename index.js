@@ -19,7 +19,7 @@ module.exports = function (homebridge) {
 
     api = homebridge;
 
-    homebridge.registerAccessory("homebridge-http-switch", "HTTP-SWITCH", HTTP_SWITCH);
+    homebridge.registerAccessory("homebridge-http-opensprinkler-api", "OPENSPRINKLER-STATION", OPENSPRINKLER_STATION);
 };
 
 const SwitchType = Object.freeze({
@@ -30,7 +30,7 @@ const SwitchType = Object.freeze({
     TOGGLE_REVERSE: "toggle-reverse",
 });
 
-function HTTP_SWITCH(log, config) {
+function OPENSPRINKLER_STATION(log, config) {
     this.log = log;
     this.name = config.name;
     this.debug = config.debug || false;
@@ -224,7 +224,7 @@ function HTTP_SWITCH(log, config) {
     }
 }
 
-HTTP_SWITCH.prototype = {
+OPENSPRINKLER_STATION.prototype = {
 
     parseUrls: function (config) {
         /** @namespace config.onUrl */
@@ -300,9 +300,9 @@ HTTP_SWITCH.prototype = {
         const informationService = new Service.AccessoryInformation();
 
         informationService
-            .setCharacteristic(Characteristic.Manufacturer, "Andreas Bauer")
-            .setCharacteristic(Characteristic.Model, "HTTP Switch")
-            .setCharacteristic(Characteristic.SerialNumber, "SW01")
+            .setCharacteristic(Characteristic.Manufacturer, "OpenSprinkler")
+            .setCharacteristic(Characteristic.Model, "OSPi")
+            .setCharacteristic(Characteristic.SerialNumber, "OS01")
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
         return [informationService, this.homebridgeService];
