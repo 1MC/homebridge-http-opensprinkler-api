@@ -1,7 +1,7 @@
 {
-  "name": "homebridge-http-switch",
-  "version": "0.5.27",
-  "description": "Powerful http switch for Homebridge",
+  "name": "homebridge-http-opensprinkler-api",
+  "version": "1.0.0",
+  "description": "OpenSprinkler API Controller for Homebridge",
   "license": "ISC",
   "keywords": [
     "homebridge-plugin"
@@ -11,10 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Supereg/homebridge-http-switch"
+    "url": "https://github.com/1MC/homebridge-http-opensprinkler-api"
   },
   "bugs": {
-    "url": "https://github.com/Supereg/homebridge-http-switch/issues"
+    "url": "https://github.com/1MC/homebridge-http-opensprinkler-api/issues"
   },
   "engines": {
     "node": ">=4.3.2",
