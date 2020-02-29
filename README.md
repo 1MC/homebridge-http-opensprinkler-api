@@ -54,7 +54,7 @@ pulls updates from your OpenSprinkler firmware.
           "onUrl": "http://localhost:8080/cm?pw=xxx&sid=0&en=1&t=600",
           "offUrl": "http://localhost:8080/cm?pw=xxx&sid=0&en=0",
           
-          "statusUrl": "http://192.168.1.10:8080/js?pw=xxx",
+          "statusUrl": "http://localhost:8080/js?pw=xxx",
           "statusPattern": "{\"sn\":[1,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+],\"nstations\":8}",
           "pullInterval": "1000"
         },
@@ -67,7 +67,7 @@ pulls updates from your OpenSprinkler firmware.
           "onUrl": "http://localhost:8080/cm?&pw=xxx&sid=1&en=1&t=600",
           "offUrl": "http://localhost:8080/cm?&pw=xxx&sid=1&en=0",
           
-          "statusUrl": "http://192.168.1.10:8080/js?pw=xxx",
+          "statusUrl": "http://localhost:8080/js?pw=xxx",
           "statusPattern": "{\"sn\":[[0-9]+,1,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+],\"nstations\":8}",
           "pullInterval": "1000"
         }
