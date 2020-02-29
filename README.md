@@ -27,13 +27,15 @@ sudo npm install -g homebridge-http-opensprinkler-api
 The configuration settings below are tailored for the basic operation of OpenSprinkler.  All API commands require the **OpenSprinkler password** to be supplied in the **'pw'** parameter.  **The password should
 be MD5 hashed too (all lower-case)**. You can find online MD5 hash tools to convert plaintext password to MD5.
 
+Note that I've over simplified the configuration settings below, there is much more advanced configuration you can make use of by referring to the original `homebridge-http-switch`.
+
 ## Configuration used for OpenSprinkler:
 
 - `name` \<string\> **required**: Defines the name which is later displayed in HomeKit
 
-* `onUrl` \<string | \[string\] | [urlObject](#urlobject) | [[urlObject](#urlobject)]\> **required**: Should be set to the Manual Station Run API call with the enable bit set to **'1'**.  Set **sid** to the station index (starting at 0) and **t** to the run duration. /cm?pw=**xxx**&sid=**xxx**&en=1&t=**xxx**
-* `offUrl` \<string | \[string\] | [urlObject](#urlobject) | [[urlObject](#urlobject)]\> **required**: Should be set to the Manual Station Run API call with the enable bit set to **'0'**.  Set **sid** to the station index (starting at 0) to be stopped. /cm?pw=**xxx**&sid=**xxx**&en=0
-* `statusUrl` \<string | [urlObject](#urlobject)\> **required**: Should be set to the url for the OpenSprinkler Get Status Status API call.  /js?pw=xxx
+* `onUrl` \<string\> **required**: Should be set to the Manual Station Run API call with the enable bit set to **'1'**.  Set **sid** to the station index (starting at 0) and **t** to the run duration. /cm?pw=**xxx**&sid=**xxx**&en=1&t=**xxx**
+* `offUrl` \<string\> **required**: Should be set to the Manual Station Run API call with the enable bit set to **'0'**.  Set **sid** to the station index (starting at 0) to be stopped. /cm?pw=**xxx**&sid=**xxx**&en=0
+* `statusUrl` \<string\> **required**: Should be set to the url for the OpenSprinkler Get Status Status API call.  /js?pw=xxx
 * `statusPattern` \<string\> **required**: Defines a regex pattern which is compared to the body of the `statusUrl`.  Example configuration based on 8 station setup.  Each accessory requires the regex pattern to be adjusted to match the station number. Refer to the [OpenSprinkler API documentation]('https://openthings.freshdesk.com/support/solutions/articles/5000716363'). 
 More on how to build regex patterns: https://www.w3schools.com/jsref/jsref_obj_regexp.asp
 * `pullInterval` \<integer\> **optional**: The property expects an interval in **milliseconds** in which the plugin 
